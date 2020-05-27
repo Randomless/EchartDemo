@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>student</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/4.7.0/echarts.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<!--将值赋给hidden域-->
+<input type="hidden" th:value="${ages}" id="ages"/>
+<input type="hidden" th:value="${sexs}" id="sexs"/>
+<input type="hidden" th:value="${colleges}" id="colleges"/>
+
+<div id="main1" style="width: 600px;height:400px;"></div>
+<div id="main2" style="width: 600px;height:400px;"></div>
+
+
+<table>
+    <thead>
+    <tr>
+        <th>姓名</th>
+        <th>性别</th>
+        <th>年龄</th>
+        <th>学院</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="c : ${colleges}">
+        <td th:text="${c}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    //在DOM div内初始化echarts实例
+    var myChart= echarts.init(document.getElementById('main1'));
+    //此处echarts打成echart 故第一遍没显示 不是cdn的错
+
+    //var students = document.getElementById("studentModel");
+    //Js 获取hidden的隐藏域,是文本 而不是json 故json.parser()解析不出来
+    var ages = $("#ages").val();
+    var sexs = $("#sexs").val();
+    var colleges = $("#colleges").val();
+    console.log(ages);
+    console.log(sexs);
+    console.log(colleges);
+
+    var agearray=[];
+    var sexarray=[];
+    var collegearray=[];
+
+    $.ajax({//JQuery的ajax请求方法
+        type: "GET",//以GET方式请求
+        url: "/studentjson",//请求的路径是/studentjson，即我们有json数据返回的路径 restful风格
+        dataType: "json",//数据格式，json格式
+        async: false,//是否异步请求
+        success: function (result) {//请求成功执行的方法
+            //将请求到的结果拼装进我们自行的空数组productName与nums
+            for (var i = 0; i < result.length; i++) {
+                agearray.push(result[i].age);
+                sexarray.push(result[i].sex);
+                collegearray.push(result[i].college);
+            }
+
+        },
+        error: function (errorMsg) {//请求成功执行的方法
+            alert("获取后台数据失败！");
+        }
+    });
+
+
+    //建立统计
+    var ageStatistic =[];
+    var maxage=Math.max(ages);
+    var minage= Math.min(ages);
+    for (x in ages){
+        ageStatistic[x-minage]++;
+    }
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: 'ECharts 入门示例'
+        },
+        tooltip: {},
+        legend: {
+            data: ['年龄']
+        },
+        xAxis: {
+            //结合
+            data:['1','2','3','4','5','6','7']
+        },
+
+        yAxis: {},
+        series: [{
+            name: '年龄',
+            type: 'bar',
+            //结合
+            data: ageStatistic
+        }]
+    };
+
+    myChart.setOption(option);
+
+</script>
+
+</body>
+</html>

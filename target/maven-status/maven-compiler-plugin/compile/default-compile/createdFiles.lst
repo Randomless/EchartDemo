@@ -1,0 +1,6 @@
+com\echart\demo\controller\HelloController.class
+com\echart\demo\mapper\StudentMapper.class
+com\echart\demo\domain\Student.class
+com\echart\demo\DemoApplication.class
+com\echart\demo\service\StudentService.class
+com\echart\demo\controller\StudentController.class
